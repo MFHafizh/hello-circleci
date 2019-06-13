@@ -1,0 +1,23 @@
+jobs:
+  build:
+    docker:
+      - image: circleci/golang
+    steps:
+      - checkout
+      - run: go build hello.go
+
+  test:
+    docker:
+      - image: circleci/golang
+    steps:
+      - checkout
+      - run: go test
+
+workflows:
+  version: 2
+  test-build:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
