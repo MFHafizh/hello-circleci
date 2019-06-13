@@ -3,7 +3,6 @@ jobs:
     docker:
       - image: circleci/golang
     steps:
-      - checkout
       - attach_workspace:
         at: /tmp/workspace
       - run: go build hello.go
@@ -13,6 +12,7 @@ jobs:
       - image: circleci/golang
     working_directory: /tmp
     steps:
+      - checkout
       - run: mkdir -p /tmp/workspace
       - run: go test
       - persist_to_workspace:
