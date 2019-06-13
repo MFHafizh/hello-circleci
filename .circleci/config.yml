@@ -6,7 +6,7 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/project
-      - run: go build -o code/server server.go
+      - run: go build -o code/server hello.go
       - store_artifacts:
           path: code
 
