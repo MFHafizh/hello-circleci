@@ -16,9 +16,9 @@ jobs:
       - run: mkdir -p workspace
       - run: go test
       - persist_to_workspace:
-        root: workspace
-        paths:
-          - ./
+          root: /workspace
+          paths: 
+            - ./
 
 workflows:
   version: 2
