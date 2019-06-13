@@ -4,6 +4,8 @@ jobs:
       - image: circleci/golang
     steps:
       - checkout
+      - attach_workspace:
+        at: /workspace
       - run: go build hello.go
 
   test:
@@ -11,7 +13,12 @@ jobs:
       - image: circleci/golang
     steps:
       - checkout
+      - run mkdir -p workspace
       - run: go test
+      - persist_to_workspace:
+        root: workspace
+        paths:
+          - ./
 
 workflows:
   version: 2
