@@ -2,16 +2,28 @@ jobs:
   build:
     docker:
       - image: circleci/golang
+    working_directory: /tmp/project
     steps:
-      - checkout
-      - run: go build hello.go
+      - attach_workspace:
+          at: /tmp/project
+      - run: go get github.com/lib/pq
+      - run: go build -o code/server hello.go
+      - store_artifacts:
+          path: code
 
   test:
     docker:
       - image: circleci/golang
+    working_directory: /tmp/project
     steps:
       - checkout
+      - run: mkdir -p /tmp/workspace
+      - run: go get github.com/lib/pq
       - run: go test
+      - persist_to_workspace:
+          root: /tmp/project
+          paths: 
+            - ./
 
 workflows:
   version: 2
