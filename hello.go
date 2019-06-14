@@ -25,7 +25,7 @@ func message(name string) string {
 	return "Hello " + name
 }
 
-func main() {
+func checkDb() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -39,6 +39,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func main() {
 	http.HandleFunc("/", print)
 	http.ListenAndServe(":8080", nil)
 }
