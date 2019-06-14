@@ -75,6 +75,8 @@ func getMemeberData(w http.ResponseWriter, r *http.Request) {
 		if id != 0 && name != "" && email != "" {
 			member := Member{Id: id, Name: name, Email: email}
 			json.NewEncoder(w).Encode(member)
+		} else {
+			http.Error(w, "ID not found", 500)
 		}
 
 	} else {
