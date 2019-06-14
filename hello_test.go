@@ -8,3 +8,9 @@ func TestMessage(t *testing.T) {
 		t.Errorf("Message was incorrect, got: %s, want: %s.", msg, "Hello guys")
 	}
 }
+func TestQuerying(t *testing.T) {
+	queryResult := checkDb(2)
+	if queryResult != "2 dua dua@mail.com" {
+		t.Errorf("query incorrect, got: %s, want: %s", queryResult, "2 dua dua@mail.com")
+	}
+}

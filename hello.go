@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -25,7 +27,7 @@ func message(name string) string {
 	return "Hello " + name
 }
 
-func checkDb() {
+func checkDb(memberId int) string {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -39,10 +41,27 @@ func checkDb() {
 	if err != nil {
 		panic(err)
 	}
+	sqlStatement := `SELECT id, name, email FROM users WHERE id=$1;`
+	var email string
+	var id int
+	var name string
+	// Replace 3 with an ID from your database or another random
+	// value to test the no rows use case.
+	row := db.QueryRow(sqlStatement, 2)
+	switch err := row.Scan(&id, &name, &email); err {
+	case sql.ErrNoRows:
+		fmt.Println("No rows were returned!")
+	case nil:
+		fmt.Println(id, name, email)
+		return strings.Join([]string{strconv.Itoa(id), name, email}, " ")
+	default:
+		panic(err)
+	}
+	return ""
 }
 
 func main() {
-	checkDb()
+	checkDb(2)
 	http.HandleFunc("/", print)
 	http.ListenAndServe(":8080", nil)
 }
