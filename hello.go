@@ -42,6 +42,7 @@ func checkDb() {
 }
 
 func main() {
+	checkDb()
 	http.HandleFunc("/", print)
 	http.ListenAndServe(":8080", nil)
 }
