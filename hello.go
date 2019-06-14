@@ -2,10 +2,13 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
+	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
 
@@ -26,7 +29,7 @@ func message(name string) string {
 	return "Hello " + name
 }
 
-func checkDb(memberId int) (int, string, string) {
+func checkDb(memberId int64) (int, string, string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -47,7 +50,7 @@ func checkDb(memberId int) (int, string, string) {
 	var name string
 	// Replace 3 with an ID from your database or another random
 	// value to test the no rows use case.
-	row := db.QueryRow(sqlStatement, 2)
+	row := db.QueryRow(sqlStatement, memberId)
 	switch err := row.Scan(&id, &name, &email); err {
 	case sql.ErrNoRows:
 		fmt.Println("No rows were returned!")
@@ -61,11 +64,26 @@ func checkDb(memberId int) (int, string, string) {
 }
 
 func getMemeberData(w http.ResponseWriter, r *http.Request) {
+	var email string
+	var id int
+	var name string
+	vars := mux.Vars(r)
+	memberId := vars["memberId"]
+	i2, err := strconv.ParseInt(memberId, 10, 64)
+	if err == nil {
+		id, name, email = checkDb(i2)
+		if id != 0 && name != "" && email != "" {
+			member := Member{Id: id, Name: name, Email: email}
+			json.NewEncoder(w).Encode(member)
+		}
 
+	} else {
+		fmt.Println("err")
+	}
 }
 func main() {
-	checkDb(2)
-	http.HandleFunc("/", print)
-	http.HandleFunc("/member/{memberId}", getMemeberData)
-	http.ListenAndServe(":8080", nil)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/", print)
+	router.HandleFunc("/member/{memberId}", getMemeberData)
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
