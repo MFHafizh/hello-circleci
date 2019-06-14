@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -15,7 +16,7 @@ const (
 	port     = 5432
 	user     = "postgres"
 	password = ""
-	dbname   = "circleci_demo"
+	dbname   = "demotable"
 )
 
 func print(w http.ResponseWriter, r *http.Request) {
@@ -29,8 +30,9 @@ func message(name string) string {
 
 func checkDb(memberId int) string {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	log.Println("connString", psqlInfo)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)
@@ -41,7 +43,7 @@ func checkDb(memberId int) string {
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `SELECT id, name, email FROM users WHERE id=$1;`
+	sqlStatement := `SELECT id, name, email FROM member WHERE id=$1;`
 	var email string
 	var id int
 	var name string
