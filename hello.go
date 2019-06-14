@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -28,7 +26,7 @@ func message(name string) string {
 	return "Hello " + name
 }
 
-func checkDb(memberId int) string {
+func checkDb(memberId int) (int, string, string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -55,15 +53,19 @@ func checkDb(memberId int) string {
 		fmt.Println("No rows were returned!")
 	case nil:
 		fmt.Println(id, name, email)
-		return strings.Join([]string{strconv.Itoa(id), name, email}, " ")
+		return id, name, email
 	default:
 		panic(err)
 	}
-	return ""
+	return 0, "", ""
 }
 
+func getMemeberData(w http.ResponseWriter, r *http.Request) {
+
+}
 func main() {
 	checkDb(2)
 	http.HandleFunc("/", print)
+	http.HandleFunc("/member/{memberId}", getMemeberData)
 	http.ListenAndServe(":8080", nil)
 }

@@ -9,8 +9,8 @@ func TestMessage(t *testing.T) {
 	}
 }
 func TestQuerying(t *testing.T) {
-	queryResult := checkDb(2)
-	if queryResult != "2 dua dua@mail.com" {
-		t.Errorf("query incorrect, got: %s, want: %s", queryResult, "2 dua dua@mail.com")
+	id, name, email := checkDb(2)
+	if id != 2 && name != "dua" && email != "dua@mail.com" {
+		t.Errorf("query incorrect, got: %d, %s, %s, want: %s", id, name, email, "2, dua, dua@mail.com")
 	}
 }
