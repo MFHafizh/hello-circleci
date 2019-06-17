@@ -80,7 +80,7 @@ func getMemeberData(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		fmt.Println("err")
+		http.Error(w, "Incorrect ID", 404)
 	}
 }
 func main() {
