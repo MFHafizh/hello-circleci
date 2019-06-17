@@ -33,6 +33,15 @@ jobs:
       - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run: |
+          psql \
+          -c "CREATE TABLE member (id int, name varchar(255), email varchar(255));"
+      - run: |
+          psql \
+          -c "INSERT INTO test VALUES (1, 'satu', 'satu@mail.com'), (2, 'dua', 'dua@mail.com');"
+      - run: |
+          psql \
+          -c "SELECT * from member"
       - run: go test
       - run:
           name: katalon
