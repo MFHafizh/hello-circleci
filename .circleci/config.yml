@@ -16,26 +16,26 @@ jobs:
     docker:
       - image: circleci/golang
       - image: circleci/postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_DB: demotable
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_DB: demotable
     working_directory: /tmp/project
     steps:
       - checkout
       - run: mkdir -p /tmp/workspace
       - run: go get github.com/lib/pq
       - run:
-        name: install dockerize
-        command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-        environment:
-          DOCKERIZE_VERSION: v0.3.0
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.3.0
       - run:
-        name: Wait for db
-        command: dockerize -wait tcp://localhost:5432 -timeout 1m
+          name: Wait for db
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run: go test
       - run:
-        - name: katalon
-        - command: ./Katalon\ Studio.app/Contents/MacOS/katalon --args -noSplash  -runMode=console -projectPath="/demo/demo.prj" -retry=0 -testSuiteCollectionPath="Test Suites/API"
+          name: katalon
+          command: ./Katalon\ Studio.app/Contents/MacOS/katalon --args -noSplash  -runMode=console -projectPath="/demo/demo.prj" -retry=0 -testSuiteCollectionPath="Test Suites/API"
       - persist_to_workspace:
           root: /tmp/project
           paths: 
