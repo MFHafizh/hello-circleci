@@ -35,18 +35,11 @@ jobs:
       - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
-      - run: |
-          psql \
-          -d tcp://localhost:5432 
-          -c "CREATE TABLE member (id int, name varchar(255), email varchar(255));"
-      - run: |
-          psql \
-          -d tcp://localhost:5432 
-          -c "INSERT INTO test VALUES (1, 'satu', 'satu@mail.com'), (2, 'dua', 'dua@mail.com');"
-      - run: |
-          psql \
-          -d tcp://localhost:5432 
-          -c "SELECT * from member"
+      - run:
+          name: seeding db
+          command: |
+            apt-get install -y postgresql-client
+            psql --host localhost -U postgres < demotable.sql
       - run: go test
       - run:
           name: katalon
