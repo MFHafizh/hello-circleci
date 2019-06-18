@@ -8,11 +8,6 @@ jobs:
       - run: mkdir -p /tmp/workspace
       - run: go get github.com/lib/pq
       - run: go get github.com/gorilla/mux
-      - run:
-          name: install dockerize
-          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-          environment:
-            DOCKERIZE_VERSION: v0.3.0
       - run: sudo apt-get update && sudo apt-get install -y git netcat curl
       - run: sudo apt-get update
       - run: sudo apt-get install postgresql-client-9.6
@@ -43,8 +38,15 @@ jobs:
       - restore_cache:
           key: go-mod-v1-{{ checksum "go.sum" }}
       - run:
-          name: Wait for db
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+          name: Waiting for Postgres to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 5432 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Postgres && exit 1
       - run:
           name: seeding db
           command: |
@@ -57,8 +59,15 @@ jobs:
             ./code/hello
           background: true
       - run:
-          name: Wait for server
-          command: dockerize -wait tcp://localhost:8080 -timeout 1m
+          name: Waiting for server to be ready
+          command: |
+            for i in `seq 1 300`;
+            do
+              nc -z 127.0.0.1 3500 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for server && exit 1
       - run:
           name: Katalon Test
           command: katalon-execute.sh -retry=0 -statusDelay=15 -testSuiteCollectionPath="demo/Test Suites/RegressionTest"
