@@ -10,7 +10,6 @@ jobs:
       - run: mkdir -p /tmp/workspace
       - run: go get github.com/lib/pq
       - run: go get github.com/gorilla/mux
-      - run: apt-get update && apt-get install -y git netcat cur
       - run: sudo apt-get update && sudo apt-get install -y git netcat curl
       - run: sudo apt-get update
       - run: sudo apt-get install postgresql-client-9.6
@@ -40,6 +39,7 @@ jobs:
           at: /tmp/project
       - restore_cache:
           key: go-mod-v1-{{ checksum "go.sum" }}
+      - run: sudo apt-get update && sudo apt-get install -y git netcat curl
       - run:
           name: Waiting for Postgres to be ready
           command: |
