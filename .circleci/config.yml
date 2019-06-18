@@ -41,12 +41,6 @@ jobs:
             set PGPASSWORD=postgres
             sudo apt-get install -y postgresql-client
             psql --host localhost -U postgres < demotable.sql
-      - run:
-          name: check db
-          command: |
-            psql \
-            -d postgresql://root@localhost/circle_test \
-            -c "SELECT * FROM MEMBER;"
       - run: go test
       - run:
           name: katalon
