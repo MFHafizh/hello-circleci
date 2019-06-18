@@ -2,28 +2,9 @@ jobs:
   build:
     docker:
       - image: circleci/golang
-      - image: circleci/postgres
-    working_directory: /tmp/project
-    steps:
-      - attach_workspace:
-          at: /tmp/project
-      - run: go get github.com/lib/pq
-      - run: go build -o code/server hello.go
-      - store_artifacts:
-          path: code
-
-  test:
-    docker:
-      - image: circleci/golang
-      - image: circleci/postgres
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: demotable
     working_directory: /tmp/project
     steps:
       - checkout
-      - run: sudo apt-get update
-      - run: sudo apt-get install postgresql-client-9.6
       - run: mkdir -p /tmp/workspace
       - run: go get github.com/lib/pq
       - run: go get github.com/gorilla/mux
@@ -32,6 +13,35 @@ jobs:
           command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
           environment:
             DOCKERIZE_VERSION: v0.3.0
+      - run: apt-get update && apt-get install -y git netcat curl
+      - run: sudo apt-get update
+      - run: sudo apt-get install postgresql-client-9.6
+      - save_cache:
+          key: go-mod-v1-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+      - run: go test
+      - run: go build -o code/hello hello.go
+      - persist_to_workspace:
+          root: /tmp/project
+          paths: 
+            - ./
+            - go/github.com/
+
+
+  test:
+    docker:
+      - image: katalonstudio/katalon
+      - image: circleci/postgres
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: demotable
+    working_directory: /tmp/project
+    steps:
+      - attach_workspace:
+          at: /tmp/project
+      - restore_cache:
+          key: go-mod-v1-{{ checksum "go.sum" }}
       - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
@@ -41,17 +51,27 @@ jobs:
             set PGPASSWORD=postgres
             sudo apt-get install -y postgresql-client
             psql --host localhost -U postgres < demotable.sql
-      - run: go test
-      - persist_to_workspace:
-          root: /tmp/project
-          paths: 
-            - ./
+      - run:
+          name: Run server in background
+          command: |
+            ./code/hello
+          background: true
+      - run:
+          name: Wait for server
+          command: dockerize -wait tcp://localhost:8080 -timeout 1m
+      - run:
+          name: Katalon Test
+          command: katalon-execute.sh -retry=0 -statusDelay=15 -testSuiteCollectionPath="demo/Test Suites/RegressionTest"
+      - store_artifacts:
+          path: code
+      - store_artifacts:
+          path: report
 
 workflows:
   version: 2
   test-build:
     jobs:
-      - test
-      - build:
+      - build
+      - test:
           requires:
-            - test
+            - build
