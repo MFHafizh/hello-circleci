@@ -75,7 +75,7 @@ jobs:
           name: Katalon Test
           command: |
             cd demo
-            katalon-execute.sh -retry=0 -statusDelay=15 -testSuiteCollectionPath="Test Suites/RegressionTest"
+            katalon-execute.sh -retry=0 -statusDelay=15 -testSuiteCollectionPath="Test Suites/API"
       - store_artifacts:
           path: code
       - store_artifacts:
