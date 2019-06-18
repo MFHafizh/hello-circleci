@@ -45,7 +45,8 @@ jobs:
           name: check db
           command: |
             psql \
-            -c "SELECT * FROM MEMBER"
+            -d postgresql://root@localhost/circle_test \
+            -c "SELECT * FROM MEMBER;"
       - run: go test
       - run:
           name: katalon
