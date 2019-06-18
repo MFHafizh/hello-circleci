@@ -21,7 +21,7 @@ jobs:
           paths:
             - "/go/pkg/mod"
       - run: go test
-      - run: go build -o code/hello hello.go
+      - run: go build -o code/hello
       - persist_to_workspace:
           root: /tmp/project
           paths: 
