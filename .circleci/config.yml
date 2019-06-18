@@ -42,9 +42,6 @@ jobs:
             sudo apt-get install -y postgresql-client
             psql --host localhost -U postgres < demotable.sql
       - run: go test
-      - run:
-          name: katalon
-          command: ./Katalon\ Studio.app/Contents/MacOS/katalon --args -noSplash  -runMode=console -projectPath="/demo/demo.prj" -retry=0 -testSuiteCollectionPath="Test Suites/API"
       - persist_to_workspace:
           root: /tmp/project
           paths: 
