@@ -54,7 +54,7 @@ jobs:
           name: seeding db
           command: |
             set PGPASSWORD=postgres
-            sudo apt-get install -y postgresql-client
+            apt-get install -y postgresql-client
             psql --host localhost -U postgres < demotable.sql
       - run:
           name: Run server in background
