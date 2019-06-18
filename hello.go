@@ -44,7 +44,7 @@ func checkDb(memberId int64) (int, string, string) {
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `SELECT id, name, email FROM member WHERE id=$1;`
+	sqlStatement := `SELECT id, name, email FROM public.member WHERE id=$1;`
 	var email string
 	var id int
 	var name string
