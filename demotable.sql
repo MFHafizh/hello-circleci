@@ -20,6 +20,8 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
+CREATE database demotable;
+\c demotable
 --
 -- Name: member; Type: TABLE; Schema: public; Owner: postgres
 --
