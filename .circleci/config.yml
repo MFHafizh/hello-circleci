@@ -38,6 +38,7 @@ jobs:
       - run:
           name: seeding db
           command: |
+            set PGPASSWORD=postgres
             apt-get install -y postgresql-client
             psql --host localhost -U postgres < demotable.sql
       - run: go test
