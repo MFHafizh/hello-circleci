@@ -73,7 +73,9 @@ jobs:
             echo Failed waiting for server && exit 1
       - run:
           name: Katalon Test
-          command: katalon-execute.sh -retry=0 -statusDelay=15 -testSuiteCollectionPath="demo/Test Suites/RegressionTest"
+          command: |
+            cd demo
+            katalon-execute.sh -retry=0 -statusDelay=15 -testSuiteCollectionPath="Test Suites/RegressionTest"
       - store_artifacts:
           path: code
       - store_artifacts:
