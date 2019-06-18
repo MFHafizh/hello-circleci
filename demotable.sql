@@ -39,7 +39,7 @@ COPY public.member (id, name, email) FROM stdin;
 2	dua	dua@mail.com
 \.
 
-SELECT * FROM "member";
+SELECT * FROM public.member;
 --
 -- PostgreSQL database dump complete
 --
