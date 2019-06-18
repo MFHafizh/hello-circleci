@@ -30,9 +30,6 @@ CREATE TABLE public.member (
     email character varying(255)
 );
 
-
-ALTER TABLE public.member OWNER TO postgres;
-
 --
 -- Data for Name: member; Type: TABLE DATA; Schema: public; Owner: postgres
 --
